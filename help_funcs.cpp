@@ -87,17 +87,20 @@ void Scene3D::getVertexArray (std::vector<GLfloat> &VertexArray, double *func, d
   int row, col, index1, index2, index3;
   for (row = 0; row < N_2; row+=((N_2>128)?N_2/128:1))
     {
-      for (col = 0; col < (row>=rect_params.n_i?rect_params.n_j:N_2); col+=((N_2>128)?N_2/128:1))
+        int lim;
+        if(row<rect_params.n_i1 || row>rect_params.n_i2) lim=N_2;
+        else lim=rect_params.n_j;
+      for (col = 0; col < lim; col+=((N_2>128)?N_2/128:1))
         {
-          index1 = get_index (row, col, N_2, rect_params.n_i, rect_params.n_j);
-          index2 = get_index (row + ((N_2>128)?N_2/128:1), col, N_2, rect_params.n_i, rect_params.n_j);
-          index3 = get_index (row + ((N_2>128)?N_2/128:1), col +((N_2>128)?N_2/128:1), N_2, rect_params.n_i, rect_params.n_j);
+          index1 = get_index (row, col, N_2, rect_params.n_i1, rect_params.n_i2, rect_params.n_j);
+          index2 = get_index (row + ((N_2>128)?N_2/128:1), col, N_2, rect_params.n_i1, rect_params.n_i2, rect_params.n_j);
+          index3 = get_index (row + ((N_2>128)?N_2/128:1), col +((N_2>128)?N_2/128:1), N_2, rect_params.n_i1, rect_params.n_i2, rect_params.n_j);
           fill_vertex_array (VertexArray, x, func, index1, index2, index3);
           fill_vertex_array_half_points (VertexArray, status, index1, index2, index3);
 
-          index1 = get_index (row, col, N_2, rect_params.n_i, rect_params.n_j);
-          index2 = get_index (row, col + ((N_2>128)?N_2/128:1), N_2, rect_params.n_i, rect_params.n_j);
-          index3 = get_index ( row + ((N_2>128)?N_2/128:1), col + ((N_2>128)?N_2/128:1), N_2, rect_params.n_i, rect_params.n_j);
+          index1 = get_index (row, col, N_2, rect_params.n_i1, rect_params.n_i2, rect_params.n_j);
+          index2 = get_index (row, col + ((N_2>128)?N_2/128:1), N_2, rect_params.n_i1, rect_params.n_i2, rect_params.n_j);
+          index3 = get_index ( row + ((N_2>128)?N_2/128:1), col + ((N_2>128)?N_2/128:1), N_2, rect_params.n_i1, rect_params.n_i2, rect_params.n_j);
           fill_vertex_array (VertexArray, x, func, index1, index2, index3);
           fill_vertex_array_half_points (VertexArray, status, index1, index2, index3);
         }
@@ -109,18 +112,21 @@ void Scene3D::getVertexArray (std::vector<GLfloat> &VertexArray, double *func, d
 	  
 	  for (row = 0; row < N_2; row++)
 	    {
-	      for (col = 0; col < (row>=rect_params.n_i?rect_params.n_j:N_2); col++)
+            int lim;
+            if(row<rect_params.n_i1 || row>rect_params.n_i2) lim=N_2;
+            else lim=rect_params.n_j;
+	      for (col = 0; col < lim; col++)
 	        {
 				std::vector<GLfloat> BufArray;
-	          index1 = get_index (row, col, N_2, rect_params.n_i, rect_params.n_j);
-	          index2 = get_index (row + 1, col, N_2, rect_params.n_i, rect_params.n_j);
-	          index3 = get_index (row + 1, col +1, N_2, rect_params.n_i, rect_params.n_j);
+	          index1 = get_index (row, col, N_2, rect_params.n_i1, rect_params.n_i2, rect_params.n_j);
+	          index2 = get_index (row + 1, col, N_2, rect_params.n_i1, rect_params.n_i2, rect_params.n_j);
+	          index3 = get_index (row + 1, col +1, N_2, rect_params.n_i1, rect_params.n_i2, rect_params.n_j);
 	          fill_vertex_array (BufArray, x, func, index1, index2, index3);
 	          fill_vertex_array_half_points (BufArray, status, index1, index2, index3);
 	
-	          index1 = get_index (row, col, N_2, rect_params.n_i, rect_params.n_j);
-	          index2 = get_index (row, col + 1, N_2, rect_params.n_i, rect_params.n_j);
-	          index3 = get_index ( row + 1, col + 1, N_2, rect_params.n_i, rect_params.n_j);
+	          index1 = get_index (row, col, N_2, rect_params.n_i1, rect_params.n_i2, rect_params.n_j);
+	          index2 = get_index (row, col + 1, N_2, rect_params.n_i1, rect_params.n_i2, rect_params.n_j);
+	          index3 = get_index ( row + 1, col + 1, N_2, rect_params.n_i1, rect_params.n_i2, rect_params.n_j);
 	          fill_vertex_array (BufArray, x, func, index1, index2, index3);
 	          fill_vertex_array_half_points (BufArray, status, index1, index2, index3);
 	          
@@ -138,10 +144,9 @@ void Scene3D::getVertexArray (std::vector<GLfloat> &VertexArray, double *func, d
 int Scene3D::update_arrays ()
 {
     //общее количество узлов
-  P = (N_2 + 1) * (rect_params.n_i + 1) + (rect_params.n_j + 1) * (N_2 - rect_params.n_i) ;
-  //P = (N_2 + 1) * (rect_params.n_i1 + 1) 
-  //    + (rect_params.n_j + 1) * (rect_params.n_i2-rect_params.n_i1) 
-  //    + (N_2 + 1) * (N_2 - rect_params.n_i1) ;
+  P = (N_2 + 1) * (rect_params.n_i1 + 1) 
+      + (rect_params.n_j + 1) * (rect_params.n_i2-rect_params.n_i1-1) 
+      + (N_2 + 1) * (N_2 - rect_params.n_i2+1) ;
 
   all_triangles = 2 * N_2 * N_2;
 

@@ -12,34 +12,19 @@ void get_my_rows (int n, int k, int p, int *i1, int *i2)
   *i2 = *i2 / p - 1;
 }
 
-int get_nz_matrix (int n, int m, int n_i, int n_j)
-{
-  return   (n_i - 1) * (m - 1) * 6 // middle points
-		 + (n - n_i) * (n_j-1) * 6
-		 + 5
-         + (n - 1) * 4 // vertical side points
-         + (n_i-1) * 4
-         + (n-n_i-1) *4
-         + (m - 1) * 4 // horizontal side points
-         + (n_j-1) * 4
-         + (m-n_j-1) * 4
-         + 3 * 3 + 2 * 2; // vertel points
-}
-/*
 int get_nz_matrix (int n, int m, int n_i1, int n_i2, int n_j)
 {
-  return   (n_i - 1) * (m - 1) * 6 // middle points
-		 + (n - n_i) * (n_j-1) * 6
+  return   (n_i1 - 1) * (m - 1) * 6 // middle points
+		 + (n_i2 - n_i1 + 1) * (n_j - 1) * 6
+         + (n - n_i2 - 1) * (m - 1) * 6
+         + 6
 		 + 5
-         + (n - 1) * 4 // vertical side points
-         + (n_i-1) * 4
-         + (n-n_i-1) *4
-         + (m - 1) * 4 // horizontal side points
-         + (n_j-1) * 4
-         + (m-n_j-1) * 4
-         + 3 * 3 + 2 * 2; // vertex points
+         + (n - 1) * 4 // left
+         + (n - 1 - 2) * 4 // right 
+         + 2 * (m - 1) *4 // up and down
+         + 2 * (m - n_j - 1) * 4 // cutout up and down
+         + 3 * 3 + 3 * 2; // vertex points
 }
-*/
 
 void matr_mult (double *a, int *jnz, int n, double *x, double *b, int k, int p)
 {
@@ -162,7 +147,9 @@ void *use_algorithm (void *arg)
     }
     
   int N = 0;
-  err = assemble_matrix (ar->N2, ar->N2, &N, &ar->jnz, &ar->a, ar->k, ar->p, ar->width, ar->height, ar->n_i, ar->n_j);
+  
+  err = assemble_matrix (ar->N2, ar->N2, &N, &ar->jnz, &ar->a, ar->k, ar->p, ar->width, ar->height, ar->n_i1, ar->n_i2, ar->n_j);
+  
   reduce_sum<int> (ar->p, &err, 1);
   if (err)
     {
@@ -170,10 +157,13 @@ void *use_algorithm (void *arg)
         printf ("Cannot assemble matrix: error %d\n", err);
       return 0;
     }
+    
   matr_mult (ar->a, ar->jnz, N, ar->b, ce, ar->k, ar->p);
+  
   reduce_sum <int> (ar->p);
 
   solve (ar->a, ar->jnz, N, ce, ar->x, EPS, MAX_IT, r, u, v, ar->k, ar->p);
+  
   reduce_sum<int> (ar->p, &err, 1);
 
   if (ar->k == ar->p - 1)

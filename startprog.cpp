@@ -48,9 +48,8 @@ int Scene3D::input_values (int argc,char *argv[])
     }    
     
     //координаты выреза (целые числа - номера узлов)
-  printf ("Input i1,j1,i2,j2 of segment\n(Note: i1 must be equal i2 or j1 must be equal j2):");
-  //if (scanf ("%d%d%d%d", &rect_params.n_i1,&rect_params.n_j1,&rect_params.n_i2,&rect_params.n_j2)!=4)
-  if (scanf ("%d%d", &rect_params.n_i,&rect_params.n_j)!=2)
+  printf ("Input i1,i2,j of segment:");
+  if (scanf ("%d%d%d", &rect_params.n_i1,&rect_params.n_i2,&rect_params.n_j)!=3)
     {
       printf ("wrong input\n");
       return -1;

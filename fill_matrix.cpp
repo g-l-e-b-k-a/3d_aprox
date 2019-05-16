@@ -1,20 +1,25 @@
 #include "algorithm.h"
 
-int get_index (int row, int col, int N_cols, int n_i, int n_j)
+int get_index (int row, int col, int N_cols, int n_i1, int n_i2, int n_j)
 {
-	if(row<=n_i) return row * (N_cols + 1) + col; // +1 because of borders of rectangle
-	else return (n_i+1)*(N_cols + 1)+(row-n_i-1)*(n_j+1)+col;
+	if(row<=n_i1) return row * (N_cols + 1) + col; // +1 because of borders of rectangle
+	else if(row<n_i2) return (n_i1+1)*(N_cols + 1)+(row-n_i1-1)*(n_j+1)+col;
+         else return (n_i1+1)*(N_cols + 1)+(n_i2-n_i1-1)*(n_j+1)+(row-n_i2)*(N_cols + 1)+col;
 }
 
-void get_pos(int pos, int N_cols, int n_i, int n_j, int &res_i, int &res_j){  //(get_index)^(-1)
-	if(pos<=(N_cols+1)*(n_i+1)){
+void get_pos(int pos, int N_cols, int n_i1, int n_i2, int n_j, int &res_i, int &res_j){  //(get_index)^(-1)
+	if(pos<=(N_cols+1)*(n_i1+1)){
 		res_i=pos/(N_cols+1);
 		res_j=pos-res_i*(N_cols+1);
-	}else{
-		pos-=(N_cols+1)*(n_i+1);
-		res_i=n_i+1+pos/(n_j+1);
+	}else if(pos<(N_cols+1)*(n_i1+1)+(n_i2-n_i1-1)*(n_j+1)){
+		pos-=(N_cols+1)*(n_i1+1);
+		res_i=n_i1+1+pos/(n_j+1);
 		res_j=pos%(n_j+1);
-	}
+	}else{
+        pos-=(N_cols+1)*(n_i1+1)+(n_i2-n_i1-1)*(n_j+1);
+		res_i=n_i2+pos/(N_cols+1);
+		res_j=pos%(N_cols+1);
+    }
 } 
 
 int not_in_point(int *x, int *y, int P_i, int P_j, int num, int n){
@@ -32,10 +37,11 @@ int not_in_point(int *x, int *y, int P_i, int P_j, int num, int n){
 	return 1;
 }			
 
-void init_matrix_b (const std::vector<double> &points, double *b, int P, double (*f)(double, double), int N_2, int n_i, int n_j, double s)
+void init_matrix_b (std::vector<double> &points, double *b, int P, double (*f)(double, double), int N_2, int n_i1, int n_i2, int n_j, double s)
 {
 	N_2=N_2;
-	n_i=n_i;
+	n_i1=n_i1;
+    n_i2=n_i2;
 	n_j=n_j;
 	s=s;
   for (int i = 0; i < P; i++)
@@ -74,12 +80,19 @@ void init_matrix_b (const std::vector<double> &points, double *b, int P, double 
 	}  
 }
 
-int get_values (int i, int j, int n, int m, double s, double *a, int n_i, int n_j)
+int get_values (int i, int j, int n, int m, double s, double *a, int n_i1, int n_i2, int n_j)
 {
-  if ((i > 0 && i < n_i && j > 0 && j < m) || (i > 0 && i < n && j > 0 && j < n_j))
+  if ((i > 0 && i < n_i1 && j > 0 && j < m) || (i>0 && i<n && j > 0 && j < n_j) || (i > n_i2 && i<n && j>0 && j<m))
     {
       a[0] = s / 2;
       a[1] = a[2] = a[3] = a[4] = a[5] = a[6] = s / 12;
+      return 6;
+    }
+  if (i==n_i2 && j==n_j)
+    {
+      a[0] = 5.*s / 12;
+      a[1] = a[2] = a[5] = a[6] = s / 12;
+      a[3] = a[4] = s / 24;
       return 6;
     }
   if (i == 0 && j == 0)
@@ -90,7 +103,7 @@ int get_values (int i, int j, int n, int m, double s, double *a, int n_i, int n_
       a[3] = s / 24;
       return 3;
     }
-  if ((i == n && j == n_j) || (i==n_i && j==m))
+  if ((i == n && j == m) || (i == n_i1 && j == m))
     {
       a[0] = s / 6;
       a[1] = s / 24;
@@ -104,22 +117,22 @@ int get_values (int i, int j, int n, int m, double s, double *a, int n_i, int n_
       a[1] = a[2] = s / 24;
       return 2;
     }
-  if (i == 0 && j == m)
+  if ((i == 0 && j == m) || (i == n_i2 && j == m))
     {
       a[0] = s / 12;
       a[1] = a[2] = s / 24;
       return 2;
     }
   
-  if (i == n_i && j == n_j)
+  if (i == n_i1 && j == n_j)
     {
-      a[0] = 5.*s / 12.;
+      a[0] = s / 3.;
       a[2] = a[3] = a[4] = s/12.;
       a[1] = a[5] = s / 24;
       return 5;
     }  
     
-  if (i == 0)
+  if ((i == 0) || (i==n_i2))
     {
       a[0] = s / 4;
       a[4] = s / 24;
@@ -136,7 +149,7 @@ int get_values (int i, int j, int n, int m, double s, double *a, int n_i, int n_
       return 4;
     }  
     
-  if (i == n || i==n_i)
+  if (i == n || i==n_i1)
     {
       a[0] = s / 4;
       a[3] = a[2] = s / 12;
@@ -154,7 +167,7 @@ int get_values (int i, int j, int n, int m, double s, double *a, int n_i, int n_
   return -1;
 }
 
-int fill_matrix (int n, int m, int N, int NZ, double s, int *I, double *A, int k, int p, int n_i, int n_j)
+int fill_matrix (int n, int m, int N, int NZ, double s, int *I, double *A, int k, int p, int n_i1, int n_i2, int n_j)
 {
   int w, l, i, j, nz;
   double a[6/*max_nz*/ + 1];
@@ -165,14 +178,17 @@ int fill_matrix (int n, int m, int N, int NZ, double s, int *I, double *A, int k
 
   for (l = i1; l < i2; l++)
     {
-		if(l<(n_i+1)*(m+1)){
+		if(l<(n_i1+1)*(m+1)){
 		      i = l / (m + 1);
 		      j = l - i * (m + 1);
+		}else if(l<(n_i1+1)*(m+1)+(n_i2-n_i1-1)*(n_j+1)){
+			 i = n_i1+1+(l-(n_i1+1)*(m+1)) / (n_j + 1);
+		     j = (l-(n_i1+1)*(m+1)) % (n_j + 1); 
 		}else{
-			 i = n_i+1+(l-(n_i+1)*(m+1)) / (n_j + 1);
-		     j = (l-(n_i+1)*(m+1)) % (n_j + 1); 
-		}         
-      nz = get_values (i, j, n, m, s, a, n_i, n_j);
+             i = n_i2+(l-(n_i1+1)*(m+1)-(n_i2-n_i1-1)*(n_j+1)) / (m + 1);
+             j = (l-(n_i1+1)*(m+1)-(n_i2-n_i1-1)*(n_j+1)) % (m + 1);
+        }         
+      nz = get_values (i, j, n, m, s, a, n_i1, n_i2, n_j);
       A[l] = a[0];
       if (I[l + 1] - I[l] != nz)
         {
@@ -188,46 +204,60 @@ int fill_matrix (int n, int m, int N, int NZ, double s, int *I, double *A, int k
   return err;
 }
 
-int fill_matrix_structure (int n, int m, int N, int NZ, int *I, int n_i, int n_j)
+int fill_matrix_structure (int n, int m, int N, int NZ, int *I, int n_i1, int n_i2, int n_j)
 {
   int len = N + 1 + NZ;
   int i, j, k, l, rows = 0, pos = N + 1;
   int x[6/*max_nz*/], y[6/*max_nz*/];
 
-  for (i = 0; i <= n_i; i++)
+  for (i = 0; i <= n_i1; i++)
     {
       for (j = 0; j <= m; j++)
         {
           I[rows] = pos;
-          k = get_links (i, j, n, m, x, y, n_i, n_j);
+          k = get_links (i, j, n, m, x, y, n_i1, n_i2, n_j);
           for (l = 0; l < k; l++)
             {
-              int index = x[l] * (m + 1) + y[l];
-              I[pos + l] = index;
+              I[pos + l] = get_index(x[l],y[l],n,n_i1,n_i2,n_j); 
             }
           pos += k;
           rows++;
         }
     }
     
-  for (i = n_i+1; i <= n; i++)
+  for (i = n_i1+1; i < n_i2; i++)
     {
       for (j = 0; j <= n_j; j++)
         {
           I[rows] = pos;
-          k = get_links (i, j, n, m, x, y, n_i, n_j);
+          k = get_links (i, j, n, m, x, y, n_i1, n_i2, n_j);
           for (l = 0; l < k; l++)
             {
-              int index = x[l] * (n_j + 1) + y[l];
-              I[pos + l] = index;
+              I[pos + l] = get_index(x[l],y[l],n,n_i1,n_i2,n_j); 
+            }
+          pos += k;
+          rows++;
+        }
+    }
+    
+    for (i = n_i2; i <= n; i++)
+    {
+      for (j = 0; j <= m; j++)
+        {
+          I[rows] = pos;
+          k = get_links (i, j, n, m, x, y, n_i1, n_i2, n_j);
+          for (l = 0; l < k; l++)
+            {
+              I[pos + l] = get_index(x[l],y[l],n,n_i1,n_i2,n_j);
             }
           pos += k;
           rows++;
         }
     }  
   I[rows] = pos;
-  if (pos != len)
+  if (pos != len){
     return -1;
+  }
   return 0;
 }
 
@@ -244,9 +274,9 @@ int get_num_links (int i, int j, int n, int m, int n_i, int n_j)
   return 4;
 }
 
-int get_links (int i, int j, int n, int m, int *x/*link_i*/, int *y/*link_j*/, int n_i, int n_j)
+int get_links (int i, int j, int n, int m, int *x/*link_i*/, int *y/*link_j*/, int n_i1, int n_i2, int n_j)
 {
-  if ((i > 0 && i < n_i && j > 0 && j < m) || (i>0 && i<n && j > 0 && j < n_j))
+  if ((i > 0 && i < n_i1 && j > 0 && j < m) || (i>0 && i<n && j > 0 && j < n_j) || (i > n_i2 && i<n && j>0 && j<m) || (i==n_i2 && j==n_j))
     {
       x[0] = i + 1;
       x[1] = i + 1;
@@ -279,7 +309,7 @@ int get_links (int i, int j, int n, int m, int *x/*link_i*/, int *y/*link_j*/, i
       return 3;
     }
 
-  if ((i == n && j == n_j) || (i == n_i && j == m))
+  if ((i == n && j == m) || (i == n_i1 && j == m))
     {
       x[0] = i - 1;
       y[0] = j;
@@ -293,7 +323,7 @@ int get_links (int i, int j, int n, int m, int *x/*link_i*/, int *y/*link_j*/, i
       return 3;
     }
     
-  if (i==n_i && j==n_j){
+  if (i==n_i1 && j==n_j){
 	  x[0] = i;
       y[0] = j + 1;
 
@@ -323,7 +353,7 @@ int get_links (int i, int j, int n, int m, int *x/*link_i*/, int *y/*link_j*/, i
       return 2;
     }
 
-  if (i == 0 && j == m)
+  if ((i == 0 && j == m) || (i == n_i2 && j == m))
     {
       x[0] = i + 1;
       y[0] = j;
@@ -334,7 +364,7 @@ int get_links (int i, int j, int n, int m, int *x/*link_i*/, int *y/*link_j*/, i
       return 2;
     }
 
-  if (i == 0)
+  if ((i == 0) || (i==n_i2))
     {
       x[0] = i;
       y[0] = j - 1;
@@ -369,7 +399,7 @@ int get_links (int i, int j, int n, int m, int *x/*link_i*/, int *y/*link_j*/, i
       return 4;
     }
 
-  if (i == n || i==n_i)
+  if (i == n || i==n_i1)
     {
       x[0] = i;
       y[0] = j + 1;
@@ -406,10 +436,12 @@ int get_links (int i, int j, int n, int m, int *x/*link_i*/, int *y/*link_j*/, i
   return -1;
 }
 
-int assemble_matrix (int n, int m, int *N, int **I, double **A, int k, int p, double w, double h, int n_i, int n_j)
+int assemble_matrix (int n, int m, int *N, int **I, double **A, int k, int p, double w, double h, int n_i1, int n_i2, int n_j)
 {
-  int NZ = get_nz_matrix (n, m, n_i, n_j);
-  *N = (n_i + 1) * (m + 1) + (n-n_i) * (n_j+1);
+  int NZ = get_nz_matrix (n, m, n_i1, n_i2, n_j);
+  *N = (m + 1) * (n_i1 + 1) 
+      + (n_j + 1) * (n_i2-n_i1-1) 
+      + (m + 1) * (n - n_i2+1) ;
   if (NZ < 0)
     return -1;
 
@@ -418,7 +450,7 @@ int assemble_matrix (int n, int m, int *N, int **I, double **A, int k, int p, do
   reduce_sum<int> (p);
 
   if (k == 0)
-    err = fill_matrix_structure (n, m, *N, NZ, *I, n_i, n_j);
+    err = fill_matrix_structure (n, m, *N, NZ, *I, n_i1, n_i2, n_j);
 
   reduce_sum<int> (p, &err, 1);
   if (err)
@@ -435,7 +467,7 @@ int assemble_matrix (int n, int m, int *N, int **I, double **A, int k, int p, do
 
   double s = hx * hy;
 
-  err = fill_matrix (n, m, *N, NZ, s, *I, *A, k, p, n_i, n_j);
+  err = fill_matrix (n, m, *N, NZ, s, *I, *A, k, p, n_i1, n_i2, n_j);
   if (err)
     return -4;
 

@@ -14,12 +14,12 @@ struct args
   int N2, P, p, k;
   double (*f)(double, double);
   double width,height;
-  int n_i, n_j;
+  int n_i1, n_i2, n_j;
 };
 
 int not_in_point(int *x, int *y, int P_i, int P_j, int num, int n);
-void get_pos(int pos, int N_cols, int n_i, int n_j, int &res_i, int &res_j);
-void init_matrix_b (const std::vector<double> &points, double *b, int P, double (*f)(double, double), int N_2, int n_i, int n_j, double s);
+void get_pos(int pos, int N_cols, int n_i1, int n_i2, int n_j, int &res_i, int &res_j);
+void init_matrix_b (std::vector<double> &points, double *b, int P, double (*f)(double, double), int N_2, int n_i1, int n_i2, int n_j, double s);
 void matr_mult (double *a, int *jnz, int n, double *x, double *b, int k, int p);
 void sub_vect (int n, double *r, double tau, double *v, int k, int p);
 void preconditioner (double *a /*int *jnz*/, int n, double *y, double *x, int k, int p);
@@ -29,15 +29,15 @@ void *use_algorithm (void *arg);
 
 int init_matrix (double *&a, int *&jnz, int P, int N2, int k, int p, double s);
 
-int get_index (int row, int col, int N_cols, int q, int w);
-int get_values (int i, int j, int n, int m, double s, double *a, int n_i, int n_j);
-int fill_matrix (int n, int m, int N, int NZ, double s, int *I, double *A, int k, int p, int n_i, int n_j);
-int fill_matrix_structure (int n, int m, int N, int NZ, int *I, int n_i, int n_j);
-int get_num_links (int i, int j, int n, int m, int n_i, int n_j);
-int get_links (int i, int j, int n, int m, int *x/*link_i*/, int *y/*link_j*/, int n_i, int n_j);
-int assemble_matrix (int n, int m, int *N, int **I, double **A, int k, int p, double w, double h, int n_i, int n_j);
+int get_index (int row, int col, int N_cols, int n_i1, int n_i2, int n_j);
+int get_values (int i, int j, int n, int m, double s, double *a, int n_i1, int n_i2, int n_j);
+int fill_matrix (int n, int m, int N, int NZ, double s, int *I, double *A, int k, int p, int n_i1, int n_i2, int n_j);
+int fill_matrix_structure (int n, int m, int N, int NZ, int *I, int n_i1, int n_i2, int n_j);
+int get_num_links (int i, int j, int n, int m, int n_i1, int n_i2, int n_j);
+int get_links (int i, int j, int n, int m, int *x/*link_i*/, int *y/*link_j*/, int n_i1, int n_i2, int n_j);
+int assemble_matrix (int n, int m, int *N, int **I, double **A, int k, int p, double w, double h, int n_i1, int n_i2, int n_j);
 
-int get_nz_matrix (int n, int m, int n_i, int n_j);
+int get_nz_matrix (int n, int m, int n_i1, int n_i2, int n_j);
 
 template <typename T>
 void reduce_sum (int p, T *a = 0, int n = 0)

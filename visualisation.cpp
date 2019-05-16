@@ -16,8 +16,7 @@ double f_0 (double x, double y)
 Scene3D::Scene3D (QWidget* parent) : QGLWidget(parent)
 {
   xRot = -90; yRot = 0; zRot = 0; zTra = 0; nSca = 1;
-  N = 1;
-  N_2 = 2;
+  //N = 1;
   N_2 = 2;
   f = f_0;
   what_to_draw = 0;
@@ -48,7 +47,7 @@ void Scene3D::recount_algorithm ()
   double *a, *b, *ans;
   int *jnz;
 
-  int len = P + 1 + get_nz_matrix (N_2, N_2,rect_params.n_i,rect_params.n_j);
+  int len = P + 1 + get_nz_matrix (N_2, N_2,rect_params.n_i1,rect_params.n_i2,rect_params.n_j);
 
   if (   !(a   = new double [len])
       || !(jnz = new int [len])
@@ -61,7 +60,7 @@ void Scene3D::recount_algorithm ()
   memset (b, 0, P * sizeof (double));
   memset (ans, 0, P * sizeof (double));
 
-  init_matrix_b (points, b, P, f, N_2,rect_params.n_i,rect_params.n_j, ((double)rect_params.a/(double)N_2)*((double)rect_params.b/(double)N_2)/2.);
+  init_matrix_b (points, b, P, f, N_2,rect_params.n_i1,rect_params.n_i2,rect_params.n_j, ((double)rect_params.a/(double)N_2)*((double)rect_params.b/(double)N_2)/2.);
 
   args *arg = new args [p];
   for (i = 0; i < p; i++)
@@ -78,7 +77,8 @@ void Scene3D::recount_algorithm ()
       arg[i].f = f;
       arg[i].width = rect_params.a;
       arg[i].height = rect_params.b;
-      arg[i].n_i = rect_params.n_i;
+      arg[i].n_i1 = rect_params.n_i1;
+      arg[i].n_i2 = rect_params.n_i2;
       arg[i].n_j = rect_params.n_j;
       memcpy (arg[i].vertices, vertices, vertex_pos_COUNT * sizeof (double));
     }
@@ -165,35 +165,21 @@ void Scene3D::get_points ()
   /*double x_center = 0.,
          y_center = 0.;*/
 
-  for (int row = 0; row <= rect_params.n_i/*1*/; row++)
+  for (int row = 0; row <= rect_params.n_i1; row++)
     {
       curr_y = y1 + row * step_y;
       for (int col = 0; col <= N_2; col++)
         {
           curr_x = x1 + col * step_x;
           
-		  int ind = get_index (row, col, N_2, rect_params.n_i/*1, rect_params.n_i2*/, rect_params.n_j);
+		  int ind = get_index (row, col, N_2, rect_params.n_i1, rect_params.n_i2, rect_params.n_j);
 		  points[2 * ind] = curr_x;
 		  points[2 * ind + 1] = curr_y;
             
         }
     }
     
-    for (int row = rect_params.n_i/*1*/+1; row <= N_2/*rect_params.n_i2*/; row++)
-    {
-      curr_y = y1 + row * step_y;
-      for (int col = 0; col <= rect_params.n_j; col++)
-        {
-          curr_x = x1 + col * step_x;
-          
-		  int ind = get_index (row, col, N_2, rect_params.n_i/*1, rect_params.n_i2*/, rect_params.n_j);
-		  points[2 * ind] = curr_x;
-		  points[2 * ind + 1] = curr_y;
-            
-        }
-    }
-    /*
-    for (int row = rect_params.n_i2+1; row <= N_2; row++)
+    for (int row = rect_params.n_i1+1; row < rect_params.n_i2; row++)
     {
       curr_y = y1 + row * step_y;
       for (int col = 0; col <= rect_params.n_j; col++)
@@ -206,7 +192,21 @@ void Scene3D::get_points ()
             
         }
     }
-    */
+    
+    for (int row = rect_params.n_i2; row <= N_2; row++)
+    {
+      curr_y = y1 + row * step_y;
+      for (int col = 0; col <= N_2; col++)
+        {
+          curr_x = x1 + col * step_x;
+          
+		  int ind = get_index (row, col, N_2, rect_params.n_i1, rect_params.n_i2, rect_params.n_j);
+		  points[2 * ind] = curr_x;
+		  points[2 * ind + 1] = curr_y;
+            
+        }
+    }
+    
 
   for (int i = 0; i < P; i++)
     func[i] = f (points[2 * i], points[2 * i + 1]);

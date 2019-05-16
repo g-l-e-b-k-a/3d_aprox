@@ -79,7 +79,7 @@ private:
   std::vector<double> half_points;          //halfs
   std::vector<double> func;                 //function
   std::vector<double> x;                    //answer
-  int N;                        //how many triangulations
+  //int N;                        //how many triangulations
   int N_2;                       //2^N
   int p;                        //threads
   int P;                        //points
@@ -94,7 +94,7 @@ private:
     double y_center;
     double a;
     double b;
-    int n_i1, n_j1, n_i2, n_j2, n_i, n_j;
+    int n_i1, n_i2, n_j;
   } rect_params;
 
   std::vector<GLfloat> VertexArray_real;

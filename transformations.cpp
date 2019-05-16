@@ -112,17 +112,19 @@ void Scene3D::keyPressEvent(QKeyEvent* pe)
         break;
 
       case Qt::Key_2:
-        N++;
-        rect_params.n_i*=2;
+        //N++;
+        rect_params.n_i1*=2;
+        rect_params.n_i2*=2;
         rect_params.n_j*=2;
         N_2 *= 2;
         recount_algorithm ();
         break;
       case Qt::Key_3:
-        if (N > 1)
+        if (N_2 > 4)
           {
-            N--;
-			rect_params.n_i/=2;
+            //N--;
+			rect_params.n_i1/=2;
+            rect_params.n_i2/=2;
 			rect_params.n_j/=2;
             N_2 /= 2;
             recount_algorithm ();
