@@ -5,20 +5,43 @@
 #include <string.h>
 #include <QDebug>
 
-static
-double f_0 (double x, double y)
+double f1 (double x, double y)
 {
   (void)x;
   (void)y;
   return exp(x*x-y*y);//exp(x*x-y*y);//x+y;//x*0.+y*0.+1.;//x+y;//exp(x*x-y*y);//x+y;//x*0.+y*0.+1.;//exp(x*x-y*y);//x+y;//exp(x*x-y*y);//exp(x-y);//x*0.+y*0.+1.;//x+y;
 }
 
+double f2 (double x, double y)
+{
+  (void)x;
+  (void)y;
+  return 1.;//exp(x*x-y*y);//x+y;//x*0.+y*0.+1.;//x+y;//exp(x*x-y*y);//x+y;//x*0.+y*0.+1.;//exp(x*x-y*y);//x+y;//exp(x*x-y*y);//exp(x-y);//x*0.+y*0.+1.;//x+y;
+}
+double f3 (double x, double y)
+{
+  (void)x;
+  (void)y;
+  return x+y;//exp(x*x-y*y);//x+y;//x*0.+y*0.+1.;//x+y;//exp(x*x-y*y);//x+y;//x*0.+y*0.+1.;//exp(x*x-y*y);//x+y;//exp(x*x-y*y);//exp(x-y);//x*0.+y*0.+1.;//x+y;
+}
+double f4 (double x, double y)
+{
+  (void)x;
+  (void)y;
+  return cos(x)*sin(y);//exp(x*x-y*y);//x+y;//x*0.+y*0.+1.;//x+y;//exp(x*x-y*y);//x+y;//x*0.+y*0.+1.;//exp(x*x-y*y);//x+y;//exp(x*x-y*y);//exp(x-y);//x*0.+y*0.+1.;//x+y;
+}
+double f5 (double x, double y)
+{
+  (void)x;
+  (void)y;
+  return x*y;//exp(x*x-y*y);//x+y;//x*0.+y*0.+1.;//x+y;//exp(x*x-y*y);//x+y;//x*0.+y*0.+1.;//exp(x*x-y*y);//x+y;//exp(x*x-y*y);//exp(x-y);//x*0.+y*0.+1.;//x+y;
+}
 Scene3D::Scene3D (QWidget* parent) : QGLWidget(parent)
 {
   xRot = -90; yRot = 0; zRot = 0; zTra = 0; nSca = 1;
   //N = 1;
   N_2 = 2;
-  f = f_0;
+  f = f1;
   what_to_draw = 0;
   all_triangles = 1;
   max_function = 1.;

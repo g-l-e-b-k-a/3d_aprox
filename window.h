@@ -33,6 +33,7 @@ enum vertex_pos
 
 class Scene3D : public QGLWidget
 {
+    Q_OBJECT
 public:
   Scene3D (QWidget* parent = 0);
   ~Scene3D ();
@@ -62,7 +63,12 @@ private:
   void draw_points_in_nodes (std::vector<GLfloat> &VertexArray);
 
   void get_points ();
-
+public slots:
+  void func1();
+  void func2();
+  void func3();
+  void func4();
+  void func5();
 protected:
   void initializeGL();
   void resizeGL(int nWidth, int nHeight);
@@ -72,6 +78,7 @@ protected:
   void mouseReleaseEvent(QMouseEvent*);
   void wheelEvent(QWheelEvent* pe);
   void keyPressEvent(QKeyEvent* pe);
+  
 
 private:
   double vertices[vertex_pos_COUNT]; //vertices
@@ -109,5 +116,9 @@ private:
   QPoint ptrMousePosition;
 };
  
-
+double f1 (double x, double y);
+double f2 (double x, double y);
+double f3 (double x, double y);
+double f4 (double x, double y);
+double f5 (double x, double y);
 #endif // WINDOW_H

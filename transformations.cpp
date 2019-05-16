@@ -61,6 +61,48 @@ void Scene3D::wheelEvent(QWheelEvent* pe)
   updateGL();
 }
 
+
+void  Scene3D::func1 ()
+{
+  f=f1;
+  
+  recount_algorithm ();
+  updateGL();
+}
+
+void  Scene3D::func2 ()
+{
+  f=f2;
+  
+  recount_algorithm ();
+  updateGL();
+}
+
+void  Scene3D::func3 ()
+{
+  f=f3;
+  
+  recount_algorithm ();
+  updateGL();
+}
+
+void  Scene3D::func4 ()
+{
+  f=f4;
+  
+  recount_algorithm ();
+  updateGL();
+}
+
+void  Scene3D::func5 ()
+{
+  f=f5;
+  
+  recount_algorithm ();
+  updateGL();
+}
+
+
 void Scene3D::keyPressEvent(QKeyEvent* pe)
 {
   switch (pe->key ())
