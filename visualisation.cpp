@@ -124,6 +124,15 @@ void Scene3D::recount_algorithm ()
  
   printf("n = %d\n",N_2); 
   
+  double max_f_real=-DBL_MAX;
+  double max_f_aprx=-DBL_MAX;
+  for(i=0;i<P;i++){
+      if(fabs(func[i])>max_f_real) max_f_real=fabs(func[i]);
+      if(fabs(x[i])>max_f_aprx) max_f_aprx=fabs(x[i]);
+  }
+  
+  printf("Max of function: %e\nMax of approx: %e\n",max_f_real, max_f_aprx);
+  
   getVertexArray (VertexArray_real, func.data (), 0, 0);
   getVertexArray (VertexArray_appr, x.data (), 0, 1);
   getVertexArray (VertexArray_residual, func.data (), x.data (), 2);
@@ -133,22 +142,25 @@ void Scene3D::drawFigure ()
 {
   glLineWidth (1.0f);
 
-  if (what_to_draw % 2 == 0)
+  if (what_to_draw == 0)
     {
       glColor3f (0, 0, 255);
       draw_points_in_nodes (VertexArray_real);
+     }
+  if (what_to_draw == 1) {
       glColor3f (255, 0, 0);
       draw_points_in_nodes (VertexArray_appr);
     }
-  if (what_to_draw % 2 == 1)
+  if (what_to_draw == 2)
     {
-      glColor3f (0, 1, 0);
+      glColor3f (0.4, 0.004, 0.45);
       draw_points_in_nodes (VertexArray_residual);
     }
 }
 
 void Scene3D::paintGL ()
 {
+            
   max_function = func[0];
   for (int i = 1; i < P; i++)
     {
@@ -156,8 +168,11 @@ void Scene3D::paintGL ()
         max_function = func[i];
     }
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  
   drawAxis ();
+  
   drawFigure ();
+  
 
   glMatrixMode (GL_MODELVIEW);
   glLoadIdentity();

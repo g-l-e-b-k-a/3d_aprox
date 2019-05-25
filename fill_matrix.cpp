@@ -46,37 +46,7 @@ void init_matrix_b (std::vector<double> &points, double *b, int P, double (*f)(d
 	s=s;
   for (int i = 0; i < P; i++)
     {
-		b[i]=f(points[2 * i], points[2 * i + 1]);
-		/*int P_i, P_j, num;
-		int x[6], y[6];
-		double s_N=0., s_Ai=0., s_NN=0.;
-		
-		get_pos(i,N_2,n_i,n_j,P_i,P_j);
-		
-		num=get_links(P_i,P_j,N_2,N_2,x,y,n_i,n_j);
-		
-		double arg_i_pred=0., arg_j_pred=0.;
-		
-		for(int j=0;j<num;j++){
-			int pos=get_index(x[j],y[j],N_2,n_i,n_j);
-			double arg_i=points[2 * i], arg_j=points[2 * i + 1];
-			
-			s_N+=f (points[2 * pos], points[2 * pos + 1]);
-			if (x[j]!=P_i) arg_i=(points[2 * i]+points[2 * pos])/2.;
-			if (y[j]!=P_j) arg_j=(points[2 * i + 1]+points[2 * pos + 1])/2.; 
-			s_Ai+=f (arg_i, arg_j); 
-			if(j>0) s_NN+= f((points[2 * pos]+arg_i_pred)/2., (points[2 * pos + 1]+arg_j_pred)/2.);
-			arg_i_pred=points[2 * pos];
-			arg_j_pred=points[2 * pos+1];
-		}
-		
-		s_Ai+=(6-num)*f(points[2 * i], points[2 * i + 1]);
-		
-		//printf("s = %f\ns_Ai = %f\ns_NN = %f\ns_N = %f\n",s,s_Ai,s_NN,s_N);
-		
-		b[i]=1./4.*(3./2.*f(points[2 * i], points[2 * i + 1])+
-				   5./6.*s_Ai+1./6.*s_NN+1./12.*s_N);
-		//printf("%f\n",b[i]);*/		   
+        b[i]=f(points[2 * i], points[2 * i + 1]);
 	}  
 }
 

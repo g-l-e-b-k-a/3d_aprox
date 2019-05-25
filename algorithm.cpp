@@ -114,7 +114,7 @@ int solve (double *a, int *jnz, int n, double *b, double *x, double eps,
       if (fabs (c1) < eps * eps || fabs (c2) < eps * eps)
         {
           if (k == 0)
-            printf ("iterations = %d, residual = %e\n", it, sqrt (c2));
+            printf ("iterations = %d\n", it/*, sqrt (c2)*/);
           return it;
         }
       tau = c1 / c2;

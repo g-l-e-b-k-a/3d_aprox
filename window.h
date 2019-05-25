@@ -2,6 +2,8 @@
 #define WINDOW_H
 
 #include <math.h>
+#include <limits.h>
+#include <cfloat>
 #include <QWidget>
 #include <QPushButton>
 #include <QPainter>
@@ -42,8 +44,10 @@ public:
   //algorithm
   void recount_algorithm ();
   int update_arrays ();
+  int alpha;
 
 private:
+  int func_number;
   void scale_plus();
   void scale_minus();
   void rotate_up();
@@ -56,19 +60,24 @@ private:
   void drawAxis();
 
   void fill_vertex_array (std::vector<GLfloat> &VertexArray, double *x, double *func, int index1, int index2, int index3);
-  void fill_vertex_array_half_points (std::vector<GLfloat> &VertexArray, int status, int index1,
+  void fill_vertex_array_half_points (std::vector<GLfloat> &VertexArray, int what_to_draw, int index1,
                                       int index2, int index3);
-  void getVertexArray (std::vector<GLfloat> &VertexArray, double *func, double *x, int status);
+  void getVertexArray (std::vector<GLfloat> &VertexArray, double *func, double *x, int what_to_draw);
   void drawFigure ();
   void draw_points_in_nodes (std::vector<GLfloat> &VertexArray);
 
   void get_points ();
 public slots:
+  void change_numb_of_p(const QString &buf);
+  void act_al1();
+  void act_al2();
+  void change_func ();
   void func1();
   void func2();
   void func3();
   void func4();
   void func5();
+  void keyPressEvent(QKeyEvent* pe);
 protected:
   void initializeGL();
   void resizeGL(int nWidth, int nHeight);
@@ -77,7 +86,7 @@ protected:
   void mouseMoveEvent(QMouseEvent* pe);
   void mouseReleaseEvent(QMouseEvent*);
   void wheelEvent(QWheelEvent* pe);
-  void keyPressEvent(QKeyEvent* pe);
+  //void keyPressEvent(QKeyEvent* pe);
   
 
 private:
@@ -116,6 +125,21 @@ private:
   QPoint ptrMousePosition;
 };
  
+ 
+class MainWindow : public QMainWindow // класс MainWindow как подкласс QMainWindow
+{ 
+   Q_OBJECT // макрос, который нужно использовать при работе с сигналами и слотами
+              
+   public:   
+      MainWindow(); 
+      Scene3D* draw_area;  // конструктор объекта главного окна
+   protected:
+      void keyPressEvent(QKeyEvent* pe);
+}; 
+ 
+ 
+
+
 double f1 (double x, double y);
 double f2 (double x, double y);
 double f3 (double x, double y);

@@ -4,7 +4,7 @@ void Scene3D::initializeGL()
 {
   glEnable (GL_BLEND);
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  qglClearColor (QColor(255,180,250));
+  qglClearColor (QColor(255,172,190));
   glEnable (GL_DEPTH_TEST);
   glShadeModel (GL_FLAT);
 }
@@ -16,7 +16,7 @@ void Scene3D::resizeGL (int nWidth, int nHeight)
   if (fabs (max_function) < 1e-12)
     max_function = 1.;
   GLfloat ratio = (GLfloat)nHeight / (GLfloat)nWidth;
-  if (what_to_draw == 0)
+  if (what_to_draw < 2)
     glOrtho (-2./*left*/, 2./*right*/,
              -2 * ratio * max_function/*bottom*/, 2 * ratio * max_function/*top*/,
              -5./*near*/, 5./*far*/);
@@ -65,6 +65,7 @@ void Scene3D::wheelEvent(QWheelEvent* pe)
 void  Scene3D::func1 ()
 {
   f=f1;
+  func_number = 1;
   
   recount_algorithm ();
   updateGL();
@@ -73,6 +74,7 @@ void  Scene3D::func1 ()
 void  Scene3D::func2 ()
 {
   f=f2;
+  func_number = 2;
   
   recount_algorithm ();
   updateGL();
@@ -81,6 +83,7 @@ void  Scene3D::func2 ()
 void  Scene3D::func3 ()
 {
   f=f3;
+  func_number = 3;
   
   recount_algorithm ();
   updateGL();
@@ -89,6 +92,7 @@ void  Scene3D::func3 ()
 void  Scene3D::func4 ()
 {
   f=f4;
+  func_number = 4;
   
   recount_algorithm ();
   updateGL();
@@ -97,6 +101,7 @@ void  Scene3D::func4 ()
 void  Scene3D::func5 ()
 {
   f=f5;
+  func_number = 5;
   
   recount_algorithm ();
   updateGL();
@@ -177,6 +182,35 @@ void Scene3D::keyPressEvent(QKeyEvent* pe)
     }
 
   updateGL ();
+}
+
+void Scene3D::change_func () {
+	what_to_draw++;
+        if (what_to_draw == 3)
+          what_to_draw = 0;
+        updateGL();
+
+}
+
+void Scene3D::act_al1() {
+	rect_params.n_i1*=alpha;
+        rect_params.n_i2*=alpha;
+        rect_params.n_j*=alpha;
+        N_2 *= alpha;
+        recount_algorithm ();
+        updateGL();
+}
+
+void Scene3D::act_al2() {
+	if((rect_params.n_i1/alpha > 0) && (rect_params.n_i1/alpha < rect_params.n_i2/alpha) && (rect_params.n_i2/alpha < N_2/alpha) &&
+	(rect_params.n_j/alpha > 0) && (rect_params.n_j/alpha < N_2/alpha)){
+		rect_params.n_i1/=alpha;
+        	rect_params.n_i2/=alpha;
+       		rect_params.n_j/=alpha;
+        	N_2 /= alpha;
+        	recount_algorithm ();
+        	updateGL();
+        }
 }
 
 void Scene3D::scale_plus()
